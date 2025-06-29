@@ -15,8 +15,8 @@ export default function MainHead({ setToken, setEmail }) {
     try {
       const response = await getName(email);
       setName(response.data.name);
-      console.log("Name fetched:", response.data.name);
-      console.log("Email used for fetching name:", email);
+      // console.log("Name fetched:", response.data.name);
+      // console.log("Email used for fetching name:", email);
     } catch (error) {
       console.error("Error fetching name:", error);
       setName("User");
