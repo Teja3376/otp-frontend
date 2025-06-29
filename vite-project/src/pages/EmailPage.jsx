@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import msgEmail from "../assets/msgEmail.jpg";
+import { sendOtp } from "../controllers/otpController";
 
 const Email = ({ setEmail, setTimer }) => {
   const [name, setName] = useState("");
@@ -10,13 +10,10 @@ const Email = ({ setEmail, setTimer }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const sendOtp = async () => {
+  const handleSendOtp = async () => {
     try {
       setLoading(true);
-      await axios.post("https://otp-backend-production.up.railway.app/send-otp", {
-        email: input,
-        name: name,
-      });
+      await sendOtp(input, name);
       localStorage.setItem("email", input);
       setEmail(input);
       toast.success("OTP sent!");
@@ -55,7 +52,7 @@ const Email = ({ setEmail, setTimer }) => {
           />
           <button
             className="w-30 h-10 bg-violet-500 text-white rounded-md mt-7 hover:bg-violet-600 transition-colors duration-300 cursor-pointer"
-            onClick={sendOtp}
+            onClick={handleSendOtp}
             disabled={loading}
           >
             {loading ? (

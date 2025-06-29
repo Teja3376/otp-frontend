@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Verifyotp from "../assets/Verifyotp.jpg";
-export default function OtpVerifyPage({setToken, timer, setTimer }) {
+import { verifyOtp, resendOtp } from "../controllers/otpController";
+
+export default function OtpVerifyPage({ setToken, timer, setTimer }) {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const email = localStorage.getItem("email");
+
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => setTimer((t) => t - 1), 1000);
@@ -15,40 +17,34 @@ export default function OtpVerifyPage({setToken, timer, setTimer }) {
     }
   }, [timer, setTimer]);
 
-  const verifyOtp = async () => {
+  const handleVerifyOtp = async () => {
     try {
-      const res = await axios.post("https://otp-backend-production.up.railway.app/verify-otp", {
-        email,
-        otp,
-      });
       setLoading(true);
+      const res = await verifyOtp(email, otp);
       localStorage.setItem("token", res.data.token);
-
       setToken(res.data.token);
       toast.success("Logged in!");
       navigate("/main");
     } catch {
       toast.error("Invalid OTP");
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
 
-  const resendOtp = async () => {
+  const handleResendOtp = async () => {
     try {
       setLoading(true);
       if (timer > 0) {
         toast.error("Please wait before resending OTP");
         return;
       }
-      await axios.post("https://otp-backend-production.up.railway.app/send-otp", { email });
+      await resendOtp(email);
       toast.success("OTP resent!");
       setTimer(60);
     } catch {
       toast.error("Failed to resend OTP");
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -72,7 +68,7 @@ export default function OtpVerifyPage({setToken, timer, setTimer }) {
           <div className="flex gap-9">
             <button
               className="w-30 h-10 bg-violet-500 text-white rounded-md hover:bg-violet-600 transition-colors duration-300 cursor-pointer"
-              onClick={verifyOtp}
+              onClick={handleVerifyOtp}
             >
               {loading ? (
                 <div className="flex items-center justify-center">
@@ -85,7 +81,7 @@ export default function OtpVerifyPage({setToken, timer, setTimer }) {
             </button>
             <button
               className="w-40 h-10 bg-violet-500 text-white rounded-md hover:bg-violet-600 transition-colors duration-300 cursor-pointer"
-              onClick={resendOtp}
+              onClick={handleResendOtp}
               disabled={timer > 0}
             >
               Resend OTP ({timer}s)

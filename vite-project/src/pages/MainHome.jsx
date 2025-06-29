@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { getName } from "../controllers/userController";
 
 export default function MainHead({ setToken, setEmail }) {
   const [name, setName] = useState("");
-  const email = localStorage.getItem("email") || ""; // Get email from localStorage
+  const email = localStorage.getItem("email") || "";
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If you store email in localStorage, use that
-    getName();
-  },[email] );
+    getNameHandler();
+  }, [email]);
 
-  const getName = async () => {
+  const getNameHandler = async () => {
     try {
-      const response = await axios.get(`https://otp-backend-production.up.railway.app/get-name?email=${email}`);
+      const response = await getName(email);
       setName(response.data.name);
       console.log("Name fetched:", response.data.name);
       console.log("Email used for fetching name:", email);
@@ -46,9 +45,6 @@ export default function MainHead({ setToken, setEmail }) {
             <p className=" pl-4 text-xl font-bold" >
               MERN Stack Developer
             </p>
-            
-
-
           </div>
           <div className=" flex w-100 h-100 items-center justify-center ">
             <img
