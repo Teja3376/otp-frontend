@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Verifyotp from "../assets/Verifyotp.jpg";
 import { verifyOtp, resendOtp } from "../controllers/otpController";
+import { toast } from "react-hot-toast";
 
 export default function OtpVerifyPage({ setToken, timer, setTimer }) {
   const [otp, setOtp] = useState("");
-  const [showDialog, setShowDialog] = useState(false);
-  const [dialogMsg, setDialogMsg] = useState("");
-  const [dialogType, setDialogType] = useState("success");
   const [loading, setLoading] = useState(false);
   const email = localStorage.getItem("email");
   const navigate = useNavigate();
@@ -21,9 +19,7 @@ export default function OtpVerifyPage({ setToken, timer, setTimer }) {
 
   const handleVerifyOtp = async () => {
     if (!otp) {
-      setDialogType("error");
-      setDialogMsg("Please enter the OTP");
-      setShowDialog(true);
+      toast.error("Please enter the OTP");
       return;
     }
     try {
@@ -31,17 +27,12 @@ export default function OtpVerifyPage({ setToken, timer, setTimer }) {
       const res = await verifyOtp(email, otp);
       localStorage.setItem("token", res.data.token);
       setToken(res.data.token);
-      setDialogType("success");
-      setDialogMsg("Logged in!");
-      setShowDialog(true);
+      toast.success("Logged in!");
       setTimeout(() => {
-        setShowDialog(false);
         navigate("/main");
       }, 1200);
     } catch {
-      setDialogType("error");
-      setDialogMsg("Invalid OTP");
-      setShowDialog(true);
+      toast.error("Invalid OTP");
     } finally {
       setLoading(false);
     }
@@ -49,22 +40,16 @@ export default function OtpVerifyPage({ setToken, timer, setTimer }) {
 
   const handleResendOtp = async () => {
     if (timer > 0) {
-      setDialogType("error");
-      setDialogMsg("Please wait before resending OTP");
-      setShowDialog(true);
+      toast.error("Please wait before resending OTP");
       return;
     }
     try {
       setLoading(true);
       await resendOtp(email);
-      setDialogType("success");
-      setDialogMsg("OTP resent!");
-      setShowDialog(true);
+      toast.success("OTP resent!");
       setTimer(60);
     } catch {
-      setDialogType("error");
-      setDialogMsg("Failed to resend OTP");
-      setShowDialog(true);
+      toast.error("Failed to resend OTP");
     } finally {
       setLoading(false);
     }
@@ -72,12 +57,25 @@ export default function OtpVerifyPage({ setToken, timer, setTimer }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-violet-200 px-2">
-      <div className="flex flex-col md:flex-row items-center bg-white rounded-2xl shadow-2xl p-6 md:p-12 gap-8 w-full max-w-2xl">
+      <div className="flex flex-col md:flex-row items-center bg-white/60 backdrop-blur-lg rounded-2xl shadow-2xl p-6 md:p-12 gap-8 w-full max-w-2xl">
         <div className="hidden md:block w-64">
           <img className="rounded-2xl w-full" src={Verifyotp} alt="Otp" />
         </div>
         <div className="flex flex-col w-full">
-          <h1 className="text-3xl font-bold text-violet-700 mb-4 text-center md:text-left">
+          <h1 className="text-3xl font-bold text-violet-700 mb-4 text-center md:text-left flex items-center gap-2">
+            <svg
+              className="w-8 h-8 text-violet-500"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
             Verify OTP
           </h1>
           <p className="mb-2 text-gray-600 text-center md:text-left">
@@ -85,7 +83,7 @@ export default function OtpVerifyPage({ setToken, timer, setTimer }) {
             <span className="font-semibold">{email}</span>
           </p>
           <input
-            className="w-full h-12 border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
+            className="w-full h-12 border border-gray-300 rounded-lg p-3 mb-4 bg-white/40 backdrop-blur focus:outline-none focus:ring-2 focus:ring-violet-500 transition placeholder:text-violet-400"
             type="text"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
@@ -94,21 +92,21 @@ export default function OtpVerifyPage({ setToken, timer, setTimer }) {
           />
           <div className="flex flex-col sm:flex-row gap-4">
             <button
-              className="w-full sm:w-auto h-12 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition font-semibold text-lg shadow"
+              className="w-full sm:w-35 h-12 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition font-semibold text-lg shadow flex items-center justify-center"
               onClick={handleVerifyOtp}
               disabled={loading}
             >
               {loading ? (
-                <div className="flex items-center justify-center">
-                  <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
-                  <span className="ml-2">Verifying...</span>
-                </div>
+                <span className="flex items-center">
+                  
+                  Verifying...
+                </span>
               ) : (
                 "Verify OTP"
               )}
             </button>
             <button
-              className="w-full sm:w-auto h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold text-lg shadow"
+              className="w-full sm:w-38 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold text-lg shadow"
               onClick={handleResendOtp}
               disabled={timer > 0 || loading}
             >
@@ -117,58 +115,6 @@ export default function OtpVerifyPage({ setToken, timer, setTimer }) {
           </div>
         </div>
       </div>
-
-      {/* Dialog Modal */}
-      {showDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div
-            className={`
-              bg-white rounded-xl shadow-2xl px-8 py-6 min-w-[250px] max-w-xs
-              flex flex-col items-center
-              transition-all duration-300
-              ${
-                dialogType === "success"
-                  ? "scale-100 opacity-100"
-                  : "scale-95 opacity-90"
-              }
-              animate-pop
-            `}
-            style={{
-              animation: "pop 0.3s cubic-bezier(.4,2,.6,1) both",
-            }}
-          >
-            <div
-              className={`mb-2 text-3xl ${
-                dialogType === "success"
-                  ? "text-green-500"
-                  : "text-red-500"
-              }`}
-            >
-              {dialogType === "success" ? "✔️" : "❌"}
-            </div>
-            <div className="text-lg font-semibold text-center mb-2">
-              {dialogMsg}
-            </div>
-            <button
-              className="mt-2 px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700 transition"
-              onClick={() => setShowDialog(false)}
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Dialog Animation Keyframes */}
-      <style>
-        {`
-          @keyframes pop {
-            0% { transform: scale(0.7); opacity: 0; }
-            80% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-          }
-        `}
-      </style>
     </div>
   );
 }

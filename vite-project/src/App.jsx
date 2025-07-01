@@ -1,10 +1,9 @@
 // frontend/src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'react-hot-toast';
 import EmailPage from './pages/EmailPage';
 import OtpVerifyPage from './pages/OtpVerifyPage';
-import 'react-toastify/dist/ReactToastify.css';
 import Nav from './components/Nav';
 import Home from './pages/Home';
 import MainHead from './pages/MainHome';
@@ -41,7 +40,30 @@ function App() {
           }
         />
       </Routes>
-      <ToastContainer />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            borderRadius: '10px',
+            background: '#fff',
+            color: '#4f46e5',
+            fontWeight: 'bold',
+            fontSize: '1rem'
+          },
+          success: {
+            iconTheme: {
+              primary: '#22c55e',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
     </Router>
   );
 }
