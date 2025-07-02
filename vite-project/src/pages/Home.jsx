@@ -5,14 +5,13 @@ const Home = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-violet-100 to-blue-200 px-2">
       <div className="glass-card shadow-2xl p-10 rounded-3xl flex flex-col items-center gap-8 w-full max-w-xl">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-violet-700 tracking-tight drop-shadow">
+        <h1 className="text-4xl font-extrabold text-center text-violet-700 tracking-tight drop-shadow">
           Welcome to the{" "}
           <span className="text-blue-500">Email OTP</span> Login System
         </h1>
-        {/* <p className="text-lg md:text-xl text-gray-600 text-center">
-          Secure, simple, and fast login with your email. <br />
-          Click the envelope to get started!
-        </p> */}
+        <p className="text-lg md:text-xl text-gray-600 text-center">
+          Click the image to go login page
+        </p>
         <a
           href="/email"
           className="border-none outline-none focus:outline-none group"
